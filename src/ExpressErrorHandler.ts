@@ -19,4 +19,4 @@ const ErrorCaptureHandler = async (err: Error, req, res, next) => {
     .send(`name: ${errname}   \n  errmsg:${errmsg} \n stackmsg:${stackmsg} `);
 };
 
-export default { ErrorCaptureHandler };
+export { ErrorCaptureHandler };
