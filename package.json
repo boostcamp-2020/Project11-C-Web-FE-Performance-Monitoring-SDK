@@ -7,9 +7,9 @@
   "author": "Dongmin Shin <nsdm821@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^14.14.9",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
-    "@types/node": "^14.14.9",
     "eslint": "^7.13.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^6.15.0",
@@ -23,6 +23,6 @@
     "start": "tsc-watch --onSuccess \" node dist/index.js\" "
   },
   "dependencies": {
-    
+    "axios": "^0.21.0"
   }
 }
