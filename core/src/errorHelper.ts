@@ -3,9 +3,9 @@ import * as fs from 'fs';
 const errorParser = (error: Error) => {
   const errorPathInfo: string = error.stack.split('\n')[1];
 
-  const lineNumberReg: RegExp = /\d+/;
-  const errorLineNumber: number =
-    parseInt(lineNumberReg.exec(errorPathInfo)[0]) - 1;
+  const lineNumberReg: RegExp = /:\d+/;
+  const errorLineNumber =
+    parseInt(lineNumberReg.exec(errorPathInfo)[0].split(':')[1]) - 1;
 
   const endReg: RegExp = /:\d+/;
   const splitToken: string = endReg.exec(errorPathInfo)[0];
