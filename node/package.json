@@ -1,6 +1,6 @@
 {
   "name": "@acent/node",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "sentry like monitoring system sdk ",
   "main": "dist/index.js",
   "repository": {

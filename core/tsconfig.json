@@ -5,7 +5,9 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node"],
+    "esModuleInterop": true,
+    "downlevelIteration": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
