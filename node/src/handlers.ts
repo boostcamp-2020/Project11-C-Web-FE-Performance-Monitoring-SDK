@@ -18,6 +18,7 @@ const setRequestInfo = (req: Request) => {
   };
 
   pocket.putInfo(requestInfo);
+  return requestInfo;
 };
 
 const getStatusFromResponse = (err: Error) => {
@@ -42,12 +43,13 @@ const errorHandler = () => {
     const errMessage: string = err.message;
     const errStack: string = err.stack;
     const errArea: any = errorHelper.errorTracer(err);
-    setRequestInfo(req);
+    const userInfo: any = setRequestInfo(req);
 
     try {
       const result: any = await transport.sendLog({
         content: `name: ${`${errName}`}   \n  errmsg:${errMessage} \n stackmsg:${errStack} `,
         errArea: errArea,
+        userInfo: userInfo,
         date: new Date(),
       });
 
