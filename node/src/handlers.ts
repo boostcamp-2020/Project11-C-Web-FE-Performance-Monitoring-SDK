@@ -1,5 +1,24 @@
-import { transport, errorHelper } from '@acent/core';
-import * as fs from 'fs';
+import { transport, errorHelper, pocket } from '@acent/core';
+import * as os from 'os';
+
+const setRequestInfo = (req: Request) => {
+  const requestInfo: {} = {
+    browser: req.headers['user-agent'],
+    language: req.headers['accept-language'],
+    method: req.method,
+    url: req.url,
+    body: req.body,
+    type: os.type(),
+    arch: os.arch(),
+    platform: os.platform(),
+    hostName: os.hostname(),
+    osVersion: os.version(),
+    runtimeName: process.release.name,
+    runtimeVersion: process.version,
+  };
+
+  pocket.putInfo(requestInfo);
+};
 
 const getStatusFromResponse = (err: Error) => {
   const status: any = err['status'] || err['statusCode'];
@@ -13,11 +32,17 @@ const isInternalServerError = (err: Error) => {
 };
 
 const errorHandler = () => {
-  const errorMiddleware = async (err: Error, _req, _res, next: Function) => {
+  const errorMiddleware = async (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: Function
+  ) => {
     const errName: string = err.name;
     const errMessage: string = err.message;
     const errStack: string = err.stack;
     const errArea: any = errorHelper.errorTracer(err);
+    setRequestInfo(req);
 
     try {
       const result: any = await transport.sendLog({
@@ -28,7 +53,7 @@ const errorHandler = () => {
 
       if (result && isInternalServerError(err)) {
         // Set error(event) id please
-
+        res['eventId'] = result;
         next(err);
         return;
       }
