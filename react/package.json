@@ -1,6 +1,6 @@
 {
   "name": "@acent/react",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "sentry like monitoring system sdk ",
   "main": "dist/index.js",
   "repository": {
@@ -35,7 +35,7 @@
     "start": "tsc-watch --onSuccess \" node dist/index.js\" "
   },
   "dependencies": {
-    "@acent/browser": "0.0.5",
+    "@acent/browser": "0.0.7",
     "@acent/core": "0.0.12"
   },
   "peerDependencies": {

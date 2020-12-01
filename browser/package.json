@@ -1,6 +1,6 @@
 {
   "name": "@acent/browser",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "sentry like monitoring system sdk ",
   "main": "dist/index.js",
   "repository": {
