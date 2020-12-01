@@ -1,6 +1,6 @@
 {
   "name": "@acent/core",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "sentry like monitoring system sdk ",
   "main": "dist/index.js",
   "repository": {
