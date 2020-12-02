@@ -11,13 +11,13 @@ const init = (options: any) => {
     }
 
     if (options.env === void 0) {
-      process.env.NODE_ENV =
-        process.env.NODE_ENV &&
-        process.env.NODE_ENV.trim().toLowerCase() == 'production'
-          ? 'production'
-          : 'development';
+      // process.env.NODE_ENV =
+      //   process.env.NODE_ENV &&
+      //   process.env.NODE_ENV.trim().toLowerCase() == 'production'
+      //     ? 'production'
+      //     : 'development';
 
-      options.env = process.env.NODE_ENV;
+      options.env = 'development';
     }
 
     pocket.putOptions(options);
