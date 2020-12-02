@@ -1,5 +1,7 @@
 import { transport, pocket } from '@acent/core';
 
+const recentErrorId: { value: string } = { value: '' };
+
 const getUserInfo = () => {
   return {
     browser: navigator.userAgent,
@@ -9,6 +11,7 @@ const getUserInfo = () => {
     hostName: window.location.hostname,
     port: window.location.port,
     url: window.location.href,
+    errorId: '',
   };
 };
 
@@ -16,7 +19,6 @@ const startErrorCapturing = () => {
   window.onunhandledrejection = async (event: PromiseRejectionEvent) => {
     const info: {} = getUserInfo();
     pocket.putInfo(info);
-
     const data = {
       content: `name: ${`${event.reason.name}`}   \n  errmsg:${
         event.reason.message
@@ -27,7 +29,9 @@ const startErrorCapturing = () => {
     };
 
     const errorId: string | boolean = await transport.sendLog(data);
-    console.log(errorId);
+    if (typeof errorId === 'string') {
+      recentErrorId.value = errorId;
+    }
   };
 
   window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
@@ -42,9 +46,11 @@ const startErrorCapturing = () => {
     };
 
     transport.sendLog(data).then(res => {
-      console.log(res);
+      if (typeof res === 'string') {
+        recentErrorId.value = res;
+      }
     });
   };
 };
 
-export { startErrorCapturing };
+export { startErrorCapturing, recentErrorId };
