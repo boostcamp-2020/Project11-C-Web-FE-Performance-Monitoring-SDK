@@ -1,33 +1,40 @@
-import { transport } from '@acent/core';
+import { recentErrorId } from '@acent/browser';
 import React from 'react';
 
 class ErrorBoundary extends React.Component {
   state: any;
+  fallback: React.ReactNode | Function;
+  resentErrorId: string;
   constructor(props) {
     super(props);
     this.state = { hasError: false };
+    this.fallback = this.setFallBack(props.fallback);
+    this.resentErrorId = '';
+  }
+
+  setFallBack(fallback) {
+    if (fallback) {
+      return fallback;
+    }
+
+    return <h1>catch error</h1>;
   }
 
   static getDerivedStateFromError(err: Error) {
     return { hasError: true };
   }
 
-  async componentDidCatch(err: Error, errInfo: React.ErrorInfo) {
-    const data = {
-      content: `name: ${`${err.name}`}\nerrMsg: ${err.message}\nstackmsg:${
-        err.stack
-      }\nerrInfo: ${errInfo}`,
-      errArea: {},
-      userInfo: {},
-      date: new Date(),
-    };
-
-    const errorId: string | boolean = await transport.sendLog(data);
+  componentDidCatch(err: Error, errInfo: React.ErrorInfo) {
+    this.resentErrorId = recentErrorId.value;
   }
 
   render() {
     if (this.state.hasError) {
-      return <h1>catch error</h1>;
+      if (typeof this.fallback == 'function') {
+        this.fallback();
+        return <h1>catch error</h1>;
+      }
+      return this.fallback;
     }
 
     return this.props.children;
