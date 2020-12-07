@@ -3,11 +3,10 @@ export declare const defaultOptions: {};
 
 const init = (options: any) => {
   if (options === void 0) {
-    // 사용자가 기본 옵션도 부여하지 않았을 경우의 대처가 필요
-    options.defaultOptions = defaultOptions;
+    alert('Acent를 시작할 때 반드시 dsn 옵션을 설정해주세요.');
   } else {
     if (options.dsn === void 0) {
-      //dsn을 입력하지 않았다면 어떻게 할까?
+      alert('Acent를 시작할 때 반드시 dsn 옵션을 설정해주세요.');
     }
 
     if (options.env === void 0) {
