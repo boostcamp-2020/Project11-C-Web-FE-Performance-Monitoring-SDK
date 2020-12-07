@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@acent/core@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@acent/core/-/core-0.1.0.tgz#7395ff7e0930ec5c77f0c5fc7c27d741dbc8e32f"
+  integrity sha512-CBAYWmQ9kYMlMUc01kgNu1sXj40Q5jAMHwAF74Kwcx4IZ0xynwoTfXuFPJqUvrrHg3EMd/eUr4OAPO4MzHp4xQ==
+  dependencies:
+    axios "^0.21.0"
+
 "@babel/code-frame@^7.0.0":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"
