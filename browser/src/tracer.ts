@@ -1,31 +1,40 @@
 import { transport, pocket } from '@acent/core';
 
 const recentErrorId: { value: string } = { value: '' };
+interface TagsType {
+  browser: string;
+  appVersion: string;
+  languages: string;
+  platform: string;
+  hostName: string;
+  port: string;
+  url: string;
+}
 
 const getUserInfo = () => {
   return {
     browser: navigator.userAgent,
     appVersion: navigator.appVersion,
-    languages: navigator.languages,
+    languages: navigator.language,
     platform: navigator.platform,
     hostName: window.location.hostname,
     port: window.location.port,
     url: window.location.href,
-    errorId: '',
   };
 };
 
 const startErrorCapturing = () => {
   window.onunhandledrejection = async (event: PromiseRejectionEvent) => {
-    const info: {} = getUserInfo();
-    pocket.putInfo(info);
+    const tags: TagsType = getUserInfo();
+    pocket.putInfo(tags);
+
     const data = {
-      content: `name: ${`${event.reason.name}`}   \n  errmsg:${
-        event.reason.message
-      } \n stackmsg:${event.reason.stack} `,
+      name: event.reason.name,
+      message: event.reason.message,
+      stack: event.reason.stack,
       errArea: {},
-      userInfo: info,
-      date: new Date(),
+      tags: tags,
+      date: new Date().getTime(),
     };
 
     const errorId: string | boolean = await transport.sendLog(data);
@@ -35,14 +44,16 @@ const startErrorCapturing = () => {
   };
 
   window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
-    const info: {} = getUserInfo();
-    pocket.putInfo(info);
+    const tags: TagsType = getUserInfo();
+    pocket.putInfo(tags);
 
     const data = {
-      content: `Error: ${errorMsg}\nScript: ${url}\nLine: ${lineNumber}\nColumn: ${column}\nStack trace: ${errorObj}\n${errorObj.stack}`,
+      name: errorObj.name,
+      message: errorObj.message,
+      stack: errorObj.stack,
       errArea: {},
-      userInfo: info,
-      date: new Date(),
+      tags: tags,
+      date: new Date().getTime(),
     };
 
     transport.sendLog(data).then(res => {

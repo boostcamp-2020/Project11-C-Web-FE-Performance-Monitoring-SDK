@@ -2,4 +2,6 @@ import * as sdk from './sdk';
 import * as Handlers from './handlers';
 
 const init = sdk.init;
-export { init, Handlers };
+const errorHandler = Handlers.errorHandler;
+const startErrorCapturing = Handlers.startErrorCapturing;
+export { init, errorHandler, startErrorCapturing };

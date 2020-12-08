@@ -3,20 +3,22 @@ export declare const defaultOptions: {};
 
 const init = (options: any) => {
   if (options === void 0) {
-    // 사용자가 기본 옵션도 부여하지 않았을 경우의 대처가 필요
+    console.warn('Acent를 시작할 때 반드시 dsn 옵션을 설정해주세요.');
     options.defaultOptions = defaultOptions;
   } else {
     if (options.dsn === void 0) {
-      //dsn을 입력하지 않았다면 어떻게 할까?
+      console.warn('Acent를 시작할 때 반드시 dsn 옵션을 설정해주세요.');
     }
 
     if (options.env === void 0) {
+      //  process.env.NODE_ENV?.trim().toLowerCase() == 'production'
+
       process.env.NODE_ENV =
         process.env.NODE_ENV &&
         process.env.NODE_ENV.trim().toLowerCase() == 'production'
           ? 'production'
           : 'development';
-
+      // option?.default 물음표, 쌍물음표 연산자 => plugin 설치
       options.env = process.env.NODE_ENV;
     }
 
