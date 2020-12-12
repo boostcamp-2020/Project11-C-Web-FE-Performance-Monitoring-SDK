@@ -1,35 +1,16 @@
 import { transport, errorHelper, pocket } from '@acent/core';
 import * as os from 'os';
+import { reqInfoType, tagType, errorArea, Reason } from './interface';
 
-interface reqInfoType {
-  browser: string;
-  language: string;
-  method: string;
-  url: string;
-  body: any;
-  type: string;
-  arch: string;
-  platform: string;
-  hostName: string;
-  osVersion: string;
-  runtimeName: string;
-  runtimeVersion: string;
-}
+const getOs = () => {
+  try {
+    const osVersion = os.version();
 
-interface tagType {
-  type: string;
-  arch: string;
-  platform: string;
-  hostName: string;
-  osVersion: string;
-  runtimeName: string;
-  runtimeVersion: string;
-}
-
-interface errorArea {
-  key: number[];
-  value: string[];
-}
+    return osVersion;
+  } catch (error) {
+    return os.type();
+  }
+};
 
 const getTags = () => {
   const tags: tagType = {
@@ -37,7 +18,7 @@ const getTags = () => {
     arch: os.arch(),
     platform: os.platform(),
     hostName: os.hostname(),
-    osVersion: os.version(),
+    osVersion: getOs(),
     runtimeName: process.release.name,
     runtimeVersion: process.version,
   };
@@ -52,12 +33,12 @@ const getRequestInfo = (req: Request) => {
     language: req.headers['accept-language'],
     method: req.method,
     url: req.url,
-    body: req.body,
+    body: JSON.stringify(req.body),
     type: os.type(),
     arch: os.arch(),
     platform: os.platform(),
     hostName: os.hostname(),
-    osVersion: os.version(),
+    osVersion: getOs(),
     runtimeName: process.release.name,
     runtimeVersion: process.version,
   };
@@ -79,7 +60,7 @@ const isInternalServerError = (err: Error) => {
 const startErrorCapturing = () => {
   process.on('uncaughtException', async (err: Error, _origin) => {
     console.log(err);
-    const errArea: errorArea = errorHelper.errorTracer(err);
+    const errArea: errorArea = errorHelper.errorTracer(err.stack);
     const tags: tagType = getTags();
 
     try {
@@ -100,6 +81,55 @@ const startErrorCapturing = () => {
   });
 };
 
+const captureException = async (err: Error, req: Request, res: Response) => {
+  const errName: string = err.name;
+  const errMessage: string = err.message;
+  const errStack: string = err.stack;
+  const errArea: errorArea = errorHelper.errorTracer(err.stack);
+  const tags: reqInfoType | tagType = req ? getRequestInfo(req) : getTags();
+
+  try {
+    const result: string | boolean = await transport.sendLog({
+      name: errName,
+      message: errMessage,
+      stack: errStack,
+      errArea: errArea,
+      tags: tags,
+      date: new Date().getTime(), // timestamp도? 정렬할 때...
+    });
+
+    if (result && isInternalServerError(err)) {
+      res['eventId'] = result;
+      return;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const catchUnhandledRejection = () => {
+  process.on('unhandledRejection', async (reason: Reason, promise) => {
+    console.log(reason);
+    const errArea: errorArea = errorHelper.errorTracer(reason.stack);
+    const tags: tagType = getTags();
+
+    try {
+      const result: string | boolean = await transport.sendLog({
+        name: reason.name,
+        message: reason.message,
+        stack: reason.stack,
+        errArea: errArea,
+        tags: tags,
+        date: new Date().getTime(),
+      });
+
+      console.log('Error ID : ', result);
+    } catch (error) {
+      throw error;
+    }
+  });
+};
+
 const errorHandler = () => {
   const errorMiddleware = async (
     err: Error,
@@ -110,7 +140,7 @@ const errorHandler = () => {
     const errName: string = err.name;
     const errMessage: string = err.message;
     const errStack: string = err.stack;
-    const errArea: errorArea = errorHelper.errorTracer(err);
+    const errArea: errorArea = errorHelper.errorTracer(err.stack);
     const tags: reqInfoType = getRequestInfo(req);
 
     try {
@@ -138,4 +168,9 @@ const errorHandler = () => {
   return errorMiddleware;
 };
 
-export { errorHandler, startErrorCapturing };
+export {
+  errorHandler,
+  startErrorCapturing,
+  catchUnhandledRejection,
+  captureException,
+};

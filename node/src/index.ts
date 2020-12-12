@@ -4,4 +4,12 @@ import * as Handlers from './handlers';
 const init = sdk.init;
 const errorHandler = Handlers.errorHandler;
 const startErrorCapturing = Handlers.startErrorCapturing;
-export { init, errorHandler, startErrorCapturing };
+const catchUnhandledRejection = Handlers.catchUnhandledRejection;
+const captureException = Handlers.captureException;
+export {
+  init,
+  errorHandler,
+  startErrorCapturing,
+  catchUnhandledRejection,
+  captureException,
+};
