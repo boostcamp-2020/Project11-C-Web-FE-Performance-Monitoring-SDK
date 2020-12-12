@@ -11,7 +11,7 @@ interface TagsType {
   url: string;
 }
 
-const getUserInfo = () => {
+const getTags = () => {
   return {
     browser: navigator.userAgent,
     appVersion: navigator.appVersion,
@@ -23,9 +23,29 @@ const getUserInfo = () => {
   };
 };
 
+const captureException = (error: Error) => {
+  const tags: TagsType = getTags();
+  pocket.putInfo(tags);
+
+  const data = {
+    name: error.name,
+    message: error.message,
+    stack: error.stack,
+    errArea: {},
+    tags: tags,
+    date: new Date().getTime(),
+  };
+
+  transport.sendLog(data).then(res => {
+    if (typeof res === 'string') {
+      recentErrorId.value = res;
+    }
+  });
+};
+
 const startErrorCapturing = () => {
   window.onunhandledrejection = async (event: PromiseRejectionEvent) => {
-    const tags: TagsType = getUserInfo();
+    const tags: TagsType = getTags();
     pocket.putInfo(tags);
 
     const data = {
@@ -44,7 +64,7 @@ const startErrorCapturing = () => {
   };
 
   window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
-    const tags: TagsType = getUserInfo();
+    const tags: TagsType = getTags();
     pocket.putInfo(tags);
 
     const data = {
@@ -64,4 +84,4 @@ const startErrorCapturing = () => {
   };
 };
 
-export { startErrorCapturing, recentErrorId };
+export { startErrorCapturing, captureException, recentErrorId };
