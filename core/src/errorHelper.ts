@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
-const errorParser = (error: Error) => {
-  const errorPathInfo: string = error.stack.split('\n')[1];
+const errorParser = (error: string) => {
+  const errorPathInfo: string = error.split('\n')[1];
 
   const errReg: RegExp = /(.js|.jsx|.ts|.tsx):\d+/;
   const errorLine: string = errReg.exec(errorPathInfo)[0];
@@ -13,7 +13,7 @@ const errorParser = (error: Error) => {
   return { errorPathInfo, errorLineNumber, splitToken };
 };
 
-const errorTracer = (err: Error) => {
+const errorTracer = (err: string) => {
   const { errorPathInfo, errorLineNumber, splitToken } = errorParser(err);
   const errMap: Map<number, string> = new Map();
 
