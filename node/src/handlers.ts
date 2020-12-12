@@ -33,7 +33,7 @@ const getRequestInfo = (req: Request) => {
     language: req.headers['accept-language'],
     method: req.method,
     url: req.url,
-    body: String(req.body),
+    body: JSON.stringify(req.body),
     type: os.type(),
     arch: os.arch(),
     platform: os.platform(),
