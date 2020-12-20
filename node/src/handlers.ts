@@ -2,6 +2,12 @@ import { transport, errorHelper, pocket } from '@acent/core';
 import * as os from 'os';
 import { reqInfoType, tagType, errorArea, Reason } from './interface';
 
+const failedPrint = (original: Error | Reason) => {
+  console.log('Failed to send data to acent server.');
+  console.log('This is your error.');
+  console.log(original);
+};
+
 const getOs = () => {
   try {
     const osVersion = os.version();
@@ -59,7 +65,6 @@ const isInternalServerError = (err: Error) => {
 
 const startErrorCapturing = () => {
   process.on('uncaughtException', async (err: Error, _origin) => {
-    console.log(err);
     const errArea: errorArea = errorHelper.errorTracer(err.stack);
     const tags: tagType = getTags();
 
@@ -70,13 +75,10 @@ const startErrorCapturing = () => {
         stack: err.stack,
         errArea: errArea,
         tags: tags,
-        date: new Date().getTime(), // timestamp도? 정렬할 때...
+        date: new Date().getTime(),
       });
-
-      console.log('Error ID : ', result);
     } catch (error) {
-      console.log(error);
-      return;
+      failedPrint(err);
     }
   });
 };
@@ -95,7 +97,7 @@ const captureException = async (err: Error, req: Request, res: Response) => {
       stack: errStack,
       errArea: errArea,
       tags: tags,
-      date: new Date().getTime(), // timestamp도? 정렬할 때...
+      date: new Date().getTime(),
     });
 
     if (result && isInternalServerError(err)) {
@@ -103,13 +105,12 @@ const captureException = async (err: Error, req: Request, res: Response) => {
       return;
     }
   } catch (error) {
-    throw error;
+    failedPrint(err);
   }
 };
 
 const catchUnhandledRejection = () => {
   process.on('unhandledRejection', async (reason: Reason, promise) => {
-    console.log(reason);
     const errArea: errorArea = errorHelper.errorTracer(reason.stack);
     const tags: tagType = getTags();
 
@@ -122,10 +123,8 @@ const catchUnhandledRejection = () => {
         tags: tags,
         date: new Date().getTime(),
       });
-
-      console.log('Error ID : ', result);
     } catch (error) {
-      throw error;
+      failedPrint(reason);
     }
   });
 };
@@ -150,7 +149,7 @@ const errorHandler = () => {
         stack: errStack,
         errArea: errArea,
         tags: tags,
-        date: new Date().getTime(), // timestamp도? 정렬할 때...
+        date: new Date().getTime(),
       });
 
       if (result && isInternalServerError(err)) {
