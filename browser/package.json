@@ -1,6 +1,6 @@
 {
   "name": "@acent/browser",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "sentry like monitoring system sdk ",
   "main": "dist/index.js",
   "repository": {
@@ -31,7 +31,7 @@
     "start": "tsc-watch --onSuccess \" node dist/index.js\" "
   },
   "dependencies": {
-    "@acent/core": "0.1.1"
+    "@acent/core": "1.0.0"
   },
   "bugs": {
     "url": "https://github.com/boostcamp-2020/Project11-C-Web-FE-Performance-Monitoring-SDK/issues"
